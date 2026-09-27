@@ -143,13 +143,12 @@ if __name__ == "__main__":
 # Then, navigate to {click.style(f"http://{ip}:{server_settings.port}", bold=True)} on your computer.
 #             """).
 
-
             bind_args["host"] = ip
             bind_args["port"] = server_settings.port
 
     if runtime_settings.debug:
         bind_args["uds"] = None
-        bind_args["host"] = "0.0.0.0"
+    bind_args["host"] = "0.0.0.0"
 
     effective_log_level = logging_settings.level
     for logger_name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
