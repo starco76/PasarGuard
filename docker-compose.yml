@@ -5,4 +5,6 @@ services:
     env_file: .env
     # network_mode: host
     volumes:
-      - /var/lib/pasarguard:/var/lib/pasarguard
+      - pasarguard_data:/var/lib/pasarguard
+volumes:
+  pasarguard_data:
