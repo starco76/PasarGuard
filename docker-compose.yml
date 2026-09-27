@@ -3,10 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      
+
     
     restart: always
-    env_file: .env
+    env_file: .env.prod
     # network_mode: host
     volumes:
       - pasarguard_data:/var/lib/pasarguard
