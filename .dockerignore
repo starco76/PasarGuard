@@ -45,12 +45,10 @@ test.db
 .AGENT
 graphify-out
 
-# Dashboard: the frontend is prebuilt in CI (build.yml / build-dev.yml) and the
-# compiled output is copied into the context as dashboard/build/. At runtime only
-# the Python integration module and the compiled assets are used (build() never
-# runs because dashboard/build/ already exists), so exclude all source/tooling.
-# Excluding+re-including direct children avoids Docker's "can't re-include a file
-# under an excluded parent directory" limitation.
-dashboard/*
-!dashboard/__init__.py
-!dashboard/build
+# Dashboard: the frontend is compiled inside the Dockerfile (dashboard-builder
+# stage), so its sources have to reach the build context. Exclude only what the
+# build must not reuse: a stale local build/ (the stage's own output is
+# authoritative), node_modules, and the offline-extracted schema.
+dashboard/build
+dashboard/node_modules
+dashboard/openapi.json
