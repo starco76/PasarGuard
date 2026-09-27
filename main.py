@@ -17,7 +17,8 @@ logger = get_logger("uvicorn-main")
 
 workers = server_settings.workers or 1
 if workers < 1:
-    logger.warning(f"Invalid UVICORN_WORKERS value '{server_settings.workers}', defaulting to 1.")
+    logger.warning(
+        f"Invalid UVICORN_WORKERS value '{server_settings.workers}', defaulting to 1.")
     workers = 1
 elif workers > 1:
     require_nats_if_multiworker(workers)
@@ -46,6 +47,7 @@ def check_and_modify_ip(ip_address: str) -> str:
         ValueError: If the provided IP address is invalid, return localhost.
     """
     try:
+        return ip_address
         # Attempt to resolve hostname to IP address
         resolved_ip = socket.gethostbyname(ip_address)
 
@@ -65,7 +67,8 @@ def check_and_modify_ip(ip_address: str) -> str:
 
 def validate_cert_and_key(cert_file_path, key_file_path, ca_type: str = "public"):
     if not os.path.isfile(cert_file_path):
-        raise ValueError(f"SSL certificate file '{cert_file_path}' does not exist.")
+        raise ValueError(
+            f"SSL certificate file '{cert_file_path}' does not exist.")
     if not os.path.isfile(key_file_path):
         raise ValueError(f"SSL key file '{key_file_path}' does not exist.")
 
@@ -82,7 +85,8 @@ def validate_cert_and_key(cert_file_path, key_file_path, ca_type: str = "public"
 
         # Only check for self-signed certificates if ca_type is "public"
         if ca_type == "public" and cert.issuer == cert.subject:
-            raise ValueError("The certificate is self-signed and not issued by a trusted CA.")
+            raise ValueError(
+                "The certificate is self-signed and not issued by a trusted CA.")
 
     except ValueError:
         # Re-raise ValueError exceptions (including our self-signed check)
@@ -105,7 +109,8 @@ if __name__ == "__main__":
     bind_args = {}
 
     if server_settings.ssl_certfile and server_settings.ssl_keyfile:
-        validate_cert_and_key(server_settings.ssl_certfile, server_settings.ssl_keyfile, ca_type=ca_type)
+        validate_cert_and_key(server_settings.ssl_certfile,
+                              server_settings.ssl_keyfile, ca_type=ca_type)
 
         bind_args["ssl_certfile"] = server_settings.ssl_certfile
         bind_args["ssl_keyfile"] = server_settings.ssl_keyfile
@@ -122,21 +127,21 @@ if __name__ == "__main__":
         else:
             ip = check_and_modify_ip(server_settings.host)
 
-            logger.warning(f"""
-{click.style("IMPORTANT!", blink=True, bold=True, fg="yellow")}
-You're running PasarGuard without specifying {click.style("UVICORN_SSL_CERTFILE", italic=True, fg="magenta")} and {click.style("UVICORN_SSL_KEYFILE", italic=True, fg="magenta")}.
-The application will only be accessible through localhost. This means that {click.style("PasarGuard and subscription URLs will not be accessible externally", bold=True)}.
+#             logger.warning(f"""
+# {click.style("IMPORTANT!", blink=True, bold=True, fg="yellow")}
+# You're running PasarGuard without specifying {click.style("UVICORN_SSL_CERTFILE", italic=True, fg="magenta")} and {click.style("UVICORN_SSL_KEYFILE", italic=True, fg="magenta")}.
+# The application will only be accessible through localhost. This means that {click.style("PasarGuard and subscription URLs will not be accessible externally", bold=True)}.
 
-If you need external access, please provide the SSL files to allow the server to bind to 0.0.0.0. Alternatively, you can run the server on localhost or a Unix socket and use a reverse proxy, such as Nginx or Caddy, to handle SSL termination and provide external access.
+# If you need external access, please provide the SSL files to allow the server to bind to 0.0.0.0. Alternatively, you can run the server on localhost or a Unix socket and use a reverse proxy, such as Nginx or Caddy, to handle SSL termination and provide external access.
 
-If you wish to continue without SSL, you can use SSH port forwarding to access the application from your machine. note that in this case, subscription functionality will not work.
+# If you wish to continue without SSL, you can use SSH port forwarding to access the application from your machine. note that in this case, subscription functionality will not work.
 
-Use the following command:
+# Use the following command:
 
-{click.style(f"ssh -L {server_settings.port}:localhost:{server_settings.port} user@server", italic=True, fg="cyan")}
+# {click.style(f"ssh -L {server_settings.port}:localhost:{server_settings.port} user@server", italic=True, fg="cyan")}
 
-Then, navigate to {click.style(f"http://{ip}:{server_settings.port}", bold=True)} on your computer.
-            """)
+# Then, navigate to {click.style(f"http://{ip}:{server_settings.port}", bold=True)} on your computer.
+#             """)
 
             bind_args["host"] = ip
             bind_args["port"] = server_settings.port
