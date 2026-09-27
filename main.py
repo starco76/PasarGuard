@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     if runtime_settings.debug:
         bind_args["uds"] = None
-    bind_args["host"] = "0.0.0.0"
+        bind_args["host"] = "0.0.0.0"
 
     effective_log_level = logging_settings.level
     for logger_name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
